@@ -27,7 +27,8 @@
     <!--endregion  appbarlayout -->
 
 
-    <EditText
+    <com.example.notes.LinedEditText
+        android:gravity="top"
         android:id="@+id/note_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
