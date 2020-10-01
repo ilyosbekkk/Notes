@@ -1,5 +1,6 @@
 package com.example.notes;
 
+import androidx.annotation.LongDef;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -18,7 +19,8 @@ public class NewActivity extends AppCompatActivity {
     //endregion
     private static final String TAG = "NewActivity";
     //region vars
-    private boolean isNewNote;
+    private boolean mIsNewNote;
+
 
     //endregion
     //region override(s)
@@ -26,16 +28,31 @@ public class NewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new);
+        mLinedEditText = findViewById(R.id.note_text);
+        mEditText = findViewById(R.id.note_edit_title);
+        mViewTitle = findViewById(R.id.note_title);
 
-        if (getIntent().hasExtra("notes")) {
-            Note note = getIntent().getParcelableExtra("notes");
-            assert note != null;
-            Log.d(TAG, "onCreate: " + note.toString());
-
+        if (getIncomingIntent()) {
+            //edit mode
+        } else {
+            //view mode
         }
+
     }
     //endregion
 
+    private boolean getIncomingIntent() {
+        if (getIntent().hasExtra("notes")) {
+            Note incomingNote = getIntent().getParcelableExtra("note");
+            assert incomingNote != null;
+            Log.d(TAG, "getIncomingIntent: " + incomingNote.toString());
+            mIsNewNote = false;
+            return false;
+        } else {
+            mIsNewNote = true;
+            return true;
+        }
+    }
     //region view state
 
     //endregion

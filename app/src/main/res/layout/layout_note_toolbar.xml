@@ -60,7 +60,7 @@
 
     <EditText
         android:visibility="gone"
-        android:id="@+id/note_edit_text"
+        android:id="@+id/note_edit_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
