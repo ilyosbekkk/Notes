@@ -14,10 +14,11 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 public class LinedEditText extends AppCompatEditText {
 
+    //AppCompatEditText compatible with older versions of Android
+    //region  vars
     private Rect mRect;
     private Paint mPaint;
-
-    //AppCompatEditText compatible with older versions of Android
+    //endregion
     //region  init&constructor
     public LinedEditText(@NonNull Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
@@ -28,7 +29,7 @@ public class LinedEditText extends AppCompatEditText {
         mPaint.setColor(Color.GREEN);
     }
     //endregion
-
+    //region override(s)
     @Override
     protected void onDraw(Canvas canvas) {
         int height = ((View) this.getParent()).getHeight();
@@ -44,4 +45,6 @@ public class LinedEditText extends AppCompatEditText {
         }
         super.onDraw(canvas);
     }
+    //endregion\
+
 }
