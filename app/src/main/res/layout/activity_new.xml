@@ -34,7 +34,8 @@
         android:layout_height="match_parent"
         android:padding="5dp"
         android:textColor="@color/black"
-        android:textSize="23sp" />
+        android:textSize="23sp"
+        android:imeOptions="flagNoExtractUi"/>
 
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -124,15 +125,16 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
     //endregion
     //region hide soft keyboard
-    private  void hideSoftKeyboard(){
-        InputMethodManager imm = (InputMethodManager)this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    private void hideSoftKeyboard() {
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = this.getCurrentFocus();
-        if(view == null) {
+        if (view == null) {
             view = new View(this);
 
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
     //endregion
     //region  getIncoming Intent
     private boolean getIncomingIntent() {
@@ -143,7 +145,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
             mIsNewNote = false;
             mMode = EDIT_MODE_DISABLED;
             return false;
-        } else   {
+        } else {
             mMode = EDIT_MODE_ENABLED;
             mIsNewNote = true;
             return true;
@@ -250,6 +252,24 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
                 break;
             case R.id.toolbar_back_arrow:
                 finish();
+        }
+    }
+    //endregion
+    //region  onSaveInstanceState|onRestoreInstanceState
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("mode", mMode);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mMode = savedInstanceState.getInt("mode");
+        if (mMode == EDIT_MODE_ENABLED) {
+            enableEditMode();
         }
     }
     //endregion
