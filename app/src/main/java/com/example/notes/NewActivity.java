@@ -1,13 +1,18 @@
 package com.example.notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -57,6 +62,8 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         } else {
             //view mode
             setNoteProperties();
+            disableContentInteraction();
+
         }
 
 
@@ -73,6 +80,24 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     }
 
     //endregion
+    //region enable/disable contentInteraction
+    private void disableContentInteraction() {
+        mLinedEditText.setKeyListener(null);
+        mLinedEditText.setFocusable(false);
+        mLinedEditText.setFocusableInTouchMode(false);
+        mLinedEditText.setCursorVisible(false);
+        mLinedEditText.clearFocus();
+    }
+
+    private void enableContentInteraction() {
+        mLinedEditText.setKeyListener(new EditText(this).getKeyListener());
+        mLinedEditText.setFocusable(true);
+        mLinedEditText.setFocusableInTouchMode(true);
+        mLinedEditText.setCursorVisible(true);
+        mLinedEditText.requestFocus();
+    }
+
+    //endregion
     //region enable/disable edit mode
     private void enableEditMode() {
         mBackArrowConatiner.setVisibility(View.GONE);
@@ -81,6 +106,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mViewTitle.setVisibility(View.GONE);
         mEditText.setVisibility(View.VISIBLE);
 
+        enableContentInteraction();
         mMode = EDIT_MODE_ENABLED;
     }
 
@@ -91,9 +117,22 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mViewTitle.setVisibility(View.VISIBLE);
         mEditText.setVisibility(View.GONE);
 
+
+        disableContentInteraction();
         mMode = EDIT_MODE_DISABLED;
     }
 
+    //endregion
+    //region hide soft keyboard
+    private  void hideSoftKeyboard(){
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = this.getCurrentFocus();
+        if(view == null) {
+            view = new View(this);
+
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     //endregion
     //region  getIncoming Intent
     private boolean getIncomingIntent() {
@@ -104,7 +143,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
             mIsNewNote = false;
             mMode = EDIT_MODE_DISABLED;
             return false;
-        } else {
+        } else   {
             mMode = EDIT_MODE_ENABLED;
             mIsNewNote = true;
             return true;
@@ -140,6 +179,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mLinedEditText.setOnTouchListener(this);
         mViewTitle.setOnClickListener(this);
         mCheck.setOnClickListener(this);
+        mBackArrow.setOnClickListener(this);
         mGestureDetector = new GestureDetector(this, this);
 
 
@@ -158,6 +198,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        Log.d(TAG, "onSingleTapUp: ");
 
         return false;
     }
@@ -179,6 +220,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
+        Log.d(TAG, "onSingleTapConfirmed: ");
         return false;
     }
 
@@ -198,17 +240,20 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.check_arrow:
+                hideSoftKeyboard();
                 disableEditMode();
                 break;
             case R.id.note_text_title:
                 enableEditMode();
                 mEditText.requestFocus();
                 mEditText.setSelection(mEditText.length());
-
-
+                break;
+            case R.id.toolbar_back_arrow:
+                finish();
         }
     }
     //endregion
+
 
 }
 

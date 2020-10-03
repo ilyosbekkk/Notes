@@ -1,25 +1,30 @@
 package com.example.notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.notes.adapters.NotesRecyclerAdapter;
 import com.example.notes.models.Note;
 import com.example.notes.util.VerticalSpacingItemDecorator;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements NotesRecyclerAdapter.ViewHolder.OnNoteClickListener {
+public class MainActivity extends AppCompatActivity implements NotesRecyclerAdapter.ViewHolder.OnNoteClickListener, FloatingActionButton.OnClickListener {
     private static final String TAG = "Message";
     //region UI components
     private RecyclerView mRecyclerView;
+    private FloatingActionButton floatingActionButton;
     //endregion
     //region  vars
     private ArrayList<Note> mNotes = new ArrayList<>();
@@ -33,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         setContentView(R.layout.activity_main);
         mRecyclerView = findViewById(R.id.recyclerView);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        floatingActionButton = findViewById(R.id.fab);
 
+        floatingActionButton.setOnClickListener(this);
 
         initRecyclerView();
         insertFakeNotes();
@@ -48,6 +55,13 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         intent.putExtra("notes", mNotes.get(position));
         startActivity(intent);
     }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(this, NewActivity.class);
+        startActivity(intent);
+    }
+
     //endregion
     //region utility methods
     private void insertFakeNotes() {
@@ -68,9 +82,29 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         VerticalSpacingItemDecorator verticalSpacingItemDecorator = new VerticalSpacingItemDecorator(10);
         mRecyclerView.addItemDecoration(verticalSpacingItemDecorator);
         mRecyclerView.setAdapter(mNoteRecyclerAdapter);
+        new ItemTouchHelper(itemToucHelperCallBack).attachToRecyclerView(mRecyclerView);
     }
 
 
+    //endregion
+    //region ItemTouchHelper
+    private void deleteNode(Note note) {
+        mNotes.remove(note);
+        mNoteRecyclerAdapter.notifyDataSetChanged();
 
+    }
+
+    private ItemTouchHelper.SimpleCallback itemToucHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            deleteNode(mNotes.get(viewHolder.getAdapterPosition()));
+        }
+
+    };
     //endregion
 }
