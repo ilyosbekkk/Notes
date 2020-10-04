@@ -3,6 +3,7 @@ package com.example.notes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,10 +15,12 @@ import android.view.View;
 
 import com.example.notes.adapters.NotesRecyclerAdapter;
 import com.example.notes.models.Note;
+import com.example.notes.persistence.NoteRepository;
 import com.example.notes.util.VerticalSpacingItemDecorator;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements NotesRecyclerAdapter.ViewHolder.OnNoteClickListener, FloatingActionButton.OnClickListener {
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
     //region  vars
     private ArrayList<Note> mNotes = new ArrayList<>();
     private NotesRecyclerAdapter mNoteRecyclerAdapter;
+    private NoteRepository mNoteRepository;
 
     //endregion
     //region override(s)
@@ -41,8 +45,11 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         floatingActionButton = findViewById(R.id.fab);
 
         floatingActionButton.setOnClickListener(this);
+        mNoteRepository = new NoteRepository(this);
+
 
         initRecyclerView();
+        retrieveNotes();
         insertFakeNotes();
         setSupportActionBar(toolbar);
         setTitle("Notes");
@@ -60,6 +67,24 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
     public void onClick(View v) {
         Intent intent = new Intent(this, NewActivity.class);
         startActivity(intent);
+    }
+
+
+    //endregion
+    //region retrieve_notes
+    private void retrieveNotes() {
+        mNoteRepository.retrieveNotesTask().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                if (mNotes.size() > 0) {
+                    mNotes.clear();
+                }
+                if (notes != null) {
+                    mNotes.addAll(notes);
+                }
+                mNoteRecyclerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     //endregion

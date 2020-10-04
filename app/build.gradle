@@ -10,6 +10,12 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+       javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation":
+                                      "$projectDir/schemas".toString()]
+            }
+        }
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -23,6 +29,7 @@ android {
 }
 
 dependencies {
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
@@ -33,6 +40,9 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     //material design dependency
     implementation 'com.google.android.material:material:1.2.1'
-    //coordinatorlayout dependenc
+    //coordinatorlayout dependency
     implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+    //room persistance dependency
+    implementation "androidx.room:room-runtime:2.2.5"
+    annotationProcessor "androidx.room:room-compiler:2.2.5"
 }

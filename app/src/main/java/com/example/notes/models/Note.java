@@ -4,11 +4,25 @@ package com.example.notes.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "notes")
 public class Note implements Parcelable {
 
     //region vars&constructor
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+
+    @ColumnInfo(name = "title")
     private String title;
+    @ColumnInfo(name = "content")
     private String content;
+    @ColumnInfo(name = "timestamp")
     private String timestamp;
 
     public Note(String title, String content, String timestamp) {
@@ -17,14 +31,18 @@ public class Note implements Parcelable {
         this.timestamp = timestamp;
     }
 
+    @Ignore
     public Note() {
 
     }
 
     //endregion
 
-    //region  Parcelable
+
+    //region  getters&setters&toString
+
     protected Note(Parcel in) {
+        id = in.readInt();
         title = in.readString();
         content = in.readString();
         timestamp = in.readString();
@@ -41,21 +59,15 @@ public class Note implements Parcelable {
             return new Note[size];
         }
     };
-    @Override
-    public int describeContents() {
-        return 0;
+
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(title);
-        dest.writeString(content);
-        dest.writeString(timestamp);
+    public void setId(int id) {
+        this.id = id;
     }
 
-    //endregion
-
-    //region  getters&setters&toString
     public String getTitle() {
         return title;
     }
@@ -79,17 +91,31 @@ public class Note implements Parcelable {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+
     @Override
     public String toString() {
         return "Note{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", timestamp='" + timestamp + '\'' +
                 '}';
     }
 
-    //endregion
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(content);
+        dest.writeString(timestamp);
+    }
+
+    //endregion
 
 
 }
