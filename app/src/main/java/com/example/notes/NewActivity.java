@@ -36,6 +36,7 @@ public class NewActivity extends AppCompatActivity implements
         GestureDetector.OnDoubleTapListener,
         View.OnClickListener, TextWatcher {
 
+
     //region  constants
     private static final int EDIT_MODE_ENABLED = 1;
     private static final int EDIT_MODE_DISABLED = 0;
@@ -90,12 +91,15 @@ public class NewActivity extends AppCompatActivity implements
         if (mIsNewNote) {
             savenewNote();
         } else {
-            //TODO update
+           saveOldNote();
         }
     }
 
     private void savenewNote() {
         mNoteRepository.insertNoteTask(mFinalNote);
+    }
+    private void saveOldNote(){
+        mNoteRepository.updateNote(mFinalNote);
     }
 
     //endregion
@@ -173,7 +177,12 @@ public class NewActivity extends AppCompatActivity implements
     private boolean getIncomingIntent() {
         if (getIntent().hasExtra("notes")) {
             mInitialNote = getIntent().getParcelableExtra("notes");
-            mFinalNote = getIntent().getParcelableExtra("notes");
+            mFinalNote  = new Note();
+            assert mInitialNote != null;
+            mFinalNote.setContent(mInitialNote.getContent());
+            mFinalNote.setTitle(mInitialNote.getTitle());
+            mFinalNote.setTimestamp(mInitialNote.getTimestamp());
+            mFinalNote.setId(mInitialNote.getId());
             assert mInitialNote != null;
             Log.d(TAG, "getIncomingIntent: " + mInitialNote.toString());
             mIsNewNote = false;
