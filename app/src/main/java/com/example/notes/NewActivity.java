@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.notes.models.Note;
+import com.example.notes.persistence.NoteRepository;
 
 public class NewActivity extends AppCompatActivity implements View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, View.OnClickListener {
 
@@ -37,13 +38,15 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     //endregion
     //region vars
     Note mInitialNote;
+    Note mFinalNote;
     private boolean mIsNewNote;
     private GestureDetector mGestureDetector;
     private int mMode;
+    private NoteRepository mNoteRepository;
 
 
     //endregion
-    //region override(s)
+    //region onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,33 +54,36 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mLinedEditText = findViewById(R.id.note_text);
         mEditText = findViewById(R.id.note_edit_title);
         mViewTitle = findViewById(R.id.note_text_title);
-        mCheckContainer = findViewById(R.id.check_container);
-        mBackArrowConatiner = findViewById(R.id.back_arrow_container);
         mCheck = findViewById(R.id.check_arrow);
         mBackArrow = findViewById(R.id.toolbar_back_arrow);
+        mCheckContainer = findViewById(R.id.check_container);
+        mBackArrowConatiner = findViewById(R.id.back_arrow_container);
 
-        if (getIncomingIntent()) {
-            //edit mode
-            enableEditMode();
-            setNewNoteProperties();
-        } else {
-            //view mode
-            setNoteProperties();
-            disableContentInteraction();
-
-        }
-
+        mNoteRepository = new NoteRepository(this);
 
         setListener();
 
+        if (getIncomingIntent()) {
+            setNewNoteProperties();
+            enableEditMode();
+        } else {
+            setNoteProperties();
+            disableContentInteraction();
+        }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mMode == EDIT_MODE_ENABLED) {
-            onClick(mCheck);
-        } else
-            super.onBackPressed();
+    //endregion
+    //region saveChanges&NewNote
+    private void saveChanges() {
+        if (mIsNewNote) {
+            savenewNote();
+        } else {
+            //TODO update
+        }
+    }
+
+    private void savenewNote() {
+        mNoteRepository.insertNoteTask(mFinalNote);
     }
 
     //endregion
@@ -117,10 +123,25 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
 
         mViewTitle.setVisibility(View.VISIBLE);
         mEditText.setVisibility(View.GONE);
-
+        mMode = EDIT_MODE_DISABLED;
 
         disableContentInteraction();
-        mMode = EDIT_MODE_DISABLED;
+        String temp = mLinedEditText.getText().toString();
+        temp = temp.replace("\n", "");
+        temp = temp.replace("\t", "");
+
+        if (temp.length() > 0) {
+            mFinalNote.setTitle(mEditText.getText().toString());
+            mFinalNote.setContent(mLinedEditText.getText().toString());
+            String timestamp = "Jan 2019";
+            mFinalNote.setTimestamp(timestamp);
+
+            if (!mFinalNote.getContent().equals(mInitialNote.getContent()) || !mFinalNote.getTitle().equals(mInitialNote.getTitle())) {
+                saveChanges();
+            }
+        }
+
+
     }
 
     //endregion
@@ -140,6 +161,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private boolean getIncomingIntent() {
         if (getIntent().hasExtra("notes")) {
             mInitialNote = getIntent().getParcelableExtra("notes");
+            mFinalNote = getIntent().getParcelableExtra("notes");
             assert mInitialNote != null;
             Log.d(TAG, "getIncomingIntent: " + mInitialNote.toString());
             mIsNewNote = false;
@@ -158,6 +180,13 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
     private void setNewNoteProperties() {
         mViewTitle.setText("Note Title");
         mEditText.setText("Note Title");
+
+        mInitialNote = new Note();
+        mFinalNote = new Note();
+
+        mInitialNote.setTitle("Note Title");
+        mFinalNote.setTitle("Note Title");
+
 
     }
 

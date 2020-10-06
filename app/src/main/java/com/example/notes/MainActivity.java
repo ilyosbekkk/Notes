@@ -47,10 +47,12 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
         floatingActionButton.setOnClickListener(this);
         mNoteRepository = new NoteRepository(this);
 
+        Log.d(TAG, "onCreate: " + Thread.currentThread().getName());
+
 
         initRecyclerView();
+
         retrieveNotes();
-        insertFakeNotes();
         setSupportActionBar(toolbar);
         setTitle("Notes");
 
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
     //endregion
-    //region retrieve_notes
+    //region retrieve_notes from database
     private void retrieveNotes() {
         mNoteRepository.retrieveNotesTask().observe(this, new Observer<List<Note>>() {
             @Override
@@ -88,17 +90,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
     }
 
     //endregion
-    //region utility methods
-    private void insertFakeNotes() {
-        for (int i = 0; i < 100; i++) {
-            Note note = new Note();
-            note.setContent("content #" + (i + 1));
-            note.setTitle("title #" + (i + 1));
-            note.setTimestamp("Jan 2019");
-            mNotes.add(note);
-        }
-        mNoteRecyclerAdapter.notifyDataSetChanged(); //very important!!!
-    }
+    //region initialize recycler view
 
     private void initRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -112,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
     //endregion
-    //region ItemTouchHelper
+    //region ItemTouchHelper (swipe delete)
     private void deleteNode(Note note) {
         mNotes.remove(note);
         mNoteRecyclerAdapter.notifyDataSetChanged();

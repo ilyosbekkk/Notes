@@ -26,3 +26,8 @@ public interface NoteDAO {
     @Update
     int update(Note... notes);
 }
+
+
+/*
+@Dao,  @Insert,  @Query,  @Delete, @Update
+ */
