@@ -36,7 +36,7 @@ public class NewActivity extends AppCompatActivity implements
         GestureDetector.OnDoubleTapListener,
         View.OnClickListener, TextWatcher {
 
-
+    //region All Variables
     //region  constants
     private static final int EDIT_MODE_ENABLED = 1;
     private static final int EDIT_MODE_DISABLED = 0;
@@ -56,9 +56,9 @@ public class NewActivity extends AppCompatActivity implements
     private GestureDetector mGestureDetector;
     private int mMode;
     private NoteRepository mNoteRepository;
-
-
     //endregion
+    //endregion
+    //region All Overrides
     //region onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,43 @@ public class NewActivity extends AppCompatActivity implements
     }
 
     //endregion
-    //region saveChanges&NewNote
+    //region  onSaveInstanceState|onRestoreInstanceState
+
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("mode", mMode);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mMode = savedInstanceState.getInt("mode");
+        if (mMode == EDIT_MODE_ENABLED) {
+            enableEditMode();
+        }
+    }
+
+    //endregion
+    //region textwatcher
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mViewTitle.setText(s);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+    //endregion
+    //endregion
+    //region SaveChanges: NewNote&OldNote
     private void saveChanges() {
         if (mIsNewNote) {
             savenewNote();
@@ -94,16 +130,39 @@ public class NewActivity extends AppCompatActivity implements
            saveOldNote();
         }
     }
-
-    private void savenewNote() {
-        mNoteRepository.insertNoteTask(mFinalNote);
-    }
     private void saveOldNote(){
         mNoteRepository.updateNote(mFinalNote);
     }
+    private void savenewNote() {
+        mNoteRepository.insertNoteTask(mFinalNote);
+    }
 
     //endregion
-    //region enable/disable contentInteraction
+    //region Set New/Old Note Properties
+    @SuppressLint("SetTextI18n")
+    private void setNewNoteProperties() {
+        mViewTitle.setText("Note Title");
+        mEditText.setText("Note Title");
+
+        mInitialNote = new Note();
+        mFinalNote = new Note();
+
+        mInitialNote.setTitle("Note Title");
+        mFinalNote.setTitle("Note Title");
+
+
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    private void setNoteProperties() {
+        mViewTitle.setText(mFinalNote.getTitle());
+        mEditText.setText(mFinalNote.getTitle());
+        mLinedEditText.setText(mFinalNote.getContent());
+    }
+
+    //endregion
+    //region Enable/Disable Content Interaction
     private void disableContentInteraction() {
         mLinedEditText.setKeyListener(null);
         mLinedEditText.setFocusable(false);
@@ -121,7 +180,7 @@ public class NewActivity extends AppCompatActivity implements
     }
 
     //endregion
-    //region enable/disable edit mode
+    //region Enable/Disable Edit Mode
     private void enableEditMode() {
         mBackArrowConatiner.setVisibility(View.GONE);
         mCheckContainer.setVisibility(View.VISIBLE);
@@ -161,7 +220,7 @@ public class NewActivity extends AppCompatActivity implements
     }
 
     //endregion
-    //region hide soft keyboard
+    //region Hide Soft Keyboard
     private void hideSoftKeyboard() {
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE);
         View view = this.getCurrentFocus();
@@ -173,18 +232,19 @@ public class NewActivity extends AppCompatActivity implements
     }
 
     //endregion
-    //region  getIncoming Intent
+    //region  Get Incoming Intent
     private boolean getIncomingIntent() {
         if (getIntent().hasExtra("notes")) {
             mInitialNote = getIntent().getParcelableExtra("notes");
+
             mFinalNote  = new Note();
+
             assert mInitialNote != null;
             mFinalNote.setContent(mInitialNote.getContent());
             mFinalNote.setTitle(mInitialNote.getTitle());
             mFinalNote.setTimestamp(mInitialNote.getTimestamp());
             mFinalNote.setId(mInitialNote.getId());
-            assert mInitialNote != null;
-            Log.d(TAG, "getIncomingIntent: " + mInitialNote.toString());
+
             mIsNewNote = false;
             mMode = EDIT_MODE_DISABLED;
             return false;
@@ -196,30 +256,7 @@ public class NewActivity extends AppCompatActivity implements
     }
 
     //endregion
-    //region set New/Not New Note Properties
-    @SuppressLint("SetTextI18n")
-    private void setNewNoteProperties() {
-        mViewTitle.setText("Note Title");
-        mEditText.setText("Note Title");
-
-        mInitialNote = new Note();
-        mFinalNote = new Note();
-
-        mInitialNote.setTitle("Note Title");
-        mFinalNote.setTitle("Note Title");
-
-
-    }
-
-
-    private void setNoteProperties() {
-        mViewTitle.setText(mInitialNote.getTitle());
-        mEditText.setText(mInitialNote.getTitle());
-        mLinedEditText.setText(mInitialNote.getContent());
-    }
-
-    //endregion
-    //region listener(s)
+    //region Listener(s)
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -306,41 +343,7 @@ public class NewActivity extends AppCompatActivity implements
         }
     }
     //endregion
-    //region  onSaveInstanceState|onRestoreInstanceState
 
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("mode", mMode);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mMode = savedInstanceState.getInt("mode");
-        if (mMode == EDIT_MODE_ENABLED) {
-            enableEditMode();
-        }
-    }
-
-    //endregion
-    //region textwatcher
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        mViewTitle.setText(s);
-    }
-
-    @Override
-    public void afterTextChanged(Editable s) {
-
-    }
-    //endregion
 
 
 }

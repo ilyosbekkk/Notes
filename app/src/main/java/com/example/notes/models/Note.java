@@ -37,8 +37,6 @@ public class Note implements Parcelable {
     }
 
     //endregion
-
-
     //region  getters&setters&toString
 
     protected Note(Parcel in) {

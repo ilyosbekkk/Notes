@@ -20,25 +20,29 @@ public class NoteRepository {
 
     }
 
+    //region insert
     public void insertNoteTask(Note note) {
         new InsertAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
 
     }
+    //endregion
 
+    //region update
     public void updateNote(Note note) {
          new UpdateAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
     }
+    //endregion
 
+    //region retrieve
     public LiveData<List<Note>> retrieveNotesTask() {
         return mNoteDatabase.getNoteDao().getNote();
     }
+    //endregion
 
-    /*
-    What is Livedata???
-     */
-
+    //region delete
     public void deleteNote(Note note) {
         new DeleteAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
     }
+    //endregion
 
 }

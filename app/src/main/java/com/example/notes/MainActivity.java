@@ -24,10 +24,10 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity implements NotesRecyclerAdapter.ViewHolder.OnNoteClickListener, FloatingActionButton.OnClickListener {
-    private static final String TAG = "Message";
+
+    //region All Variables
     //region UI components
     private RecyclerView mRecyclerView;
-    private FloatingActionButton floatingActionButton;
     //endregion
     //region  vars
     private ArrayList<Note> mNotes = new ArrayList<>();
@@ -35,19 +35,19 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
     private NoteRepository mNoteRepository;
 
     //endregion
-    //region override(s)
+    //endregion
+    //region All Overrrides
+    //region Overrides
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = findViewById(R.id.recyclerView);
         Toolbar toolbar = findViewById(R.id.toolbar);
-        floatingActionButton = findViewById(R.id.fab);
+        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
 
         floatingActionButton.setOnClickListener(this);
         mNoteRepository = new NoteRepository(this);
-
-        Log.d(TAG, "onCreate: " + Thread.currentThread().getName());
 
 
         initRecyclerView();
@@ -73,7 +73,24 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
     //endregion
-    //region retrieve/delete/update notes
+    //region ItemTouchHelper (swipe delete)
+
+
+    private ItemTouchHelper.SimpleCallback itemToucHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            deleteNode(mNotes.get(viewHolder.getAdapterPosition()));
+        }
+
+    };
+    //endregion
+    //endregion
+    //region retrieve/delete notes
     private void retrieveNotes() {
         mNoteRepository.retrieveNotesTask().observe(this, new Observer<List<Note>>() {
             @Override
@@ -113,20 +130,5 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
     //endregion
-    //region ItemTouchHelper (swipe delete)
 
-
-    private ItemTouchHelper.SimpleCallback itemToucHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            deleteNode(mNotes.get(viewHolder.getAdapterPosition()));
-        }
-
-    };
-    //endregion
 }
