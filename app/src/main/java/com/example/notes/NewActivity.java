@@ -9,6 +9,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -21,8 +23,18 @@ import android.widget.TextView;
 
 import com.example.notes.models.Note;
 import com.example.notes.persistence.NoteRepository;
+import com.example.notes.util.Utility;
 
-public class NewActivity extends AppCompatActivity implements View.OnTouchListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener, View.OnClickListener {
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
+public class NewActivity extends AppCompatActivity implements
+        View.OnTouchListener,
+        GestureDetector.OnGestureListener,
+        GestureDetector.OnDoubleTapListener,
+        View.OnClickListener, TextWatcher {
 
     //region  constants
     private static final int EDIT_MODE_ENABLED = 1;
@@ -126,15 +138,15 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mMode = EDIT_MODE_DISABLED;
 
         disableContentInteraction();
-        String temp = mLinedEditText.getText().toString();
+        String temp = Objects.requireNonNull(mLinedEditText.getText()).toString();
         temp = temp.replace("\n", "");
         temp = temp.replace("\t", "");
 
         if (temp.length() > 0) {
             mFinalNote.setTitle(mEditText.getText().toString());
             mFinalNote.setContent(mLinedEditText.getText().toString());
-            String timestamp = "Jan 2019";
-            mFinalNote.setTimestamp(timestamp);
+            String currentDate = Utility.getCurrentTimeStamp();
+            mFinalNote.setTimestamp(currentDate);
 
             if (!mFinalNote.getContent().equals(mInitialNote.getContent()) || !mFinalNote.getTitle().equals(mInitialNote.getTitle())) {
                 saveChanges();
@@ -211,6 +223,7 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         mViewTitle.setOnClickListener(this);
         mCheck.setOnClickListener(this);
         mBackArrow.setOnClickListener(this);
+        mEditText.addTextChangedListener(this);
         mGestureDetector = new GestureDetector(this, this);
 
 
@@ -300,6 +313,23 @@ public class NewActivity extends AppCompatActivity implements View.OnTouchListen
         if (mMode == EDIT_MODE_ENABLED) {
             enableEditMode();
         }
+    }
+
+    //endregion
+    //region textwatcher
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        mViewTitle.setText(s);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
     //endregion
 

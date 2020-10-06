@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
 
     //endregion
-    //region retrieve_notes from database
+    //region retrieve/delete/update notes
     private void retrieveNotes() {
         mNoteRepository.retrieveNotesTask().observe(this, new Observer<List<Note>>() {
             @Override
@@ -88,6 +88,15 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
             }
         });
     }
+
+    private void deleteNode(Note note) {
+        mNotes.remove(note);
+        mNoteRepository.deleteNote(note);
+        mNoteRecyclerAdapter.notifyDataSetChanged();
+
+
+    }
+
 
     //endregion
     //region initialize recycler view
@@ -105,11 +114,7 @@ public class MainActivity extends AppCompatActivity implements NotesRecyclerAdap
 
     //endregion
     //region ItemTouchHelper (swipe delete)
-    private void deleteNode(Note note) {
-        mNotes.remove(note);
-        mNoteRecyclerAdapter.notifyDataSetChanged();
 
-    }
 
     private ItemTouchHelper.SimpleCallback itemToucHelperCallBack = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         @Override
