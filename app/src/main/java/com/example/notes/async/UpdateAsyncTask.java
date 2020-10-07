@@ -1,23 +1,22 @@
 package com.example.notes.async;
 
-import android.os.AsyncTask;
 
 import com.example.notes.models.Note;
 import com.example.notes.persistence.NoteDAO;
 
-public class UpdateAsyncTask extends AsyncTask<Note, Void, Void> {
+public class UpdateAsyncTask extends Thread {
+    private NoteDAO mNoteDao;
+    private Note mNote;
 
-
-    NoteDAO mNoteDao;
-
-    public UpdateAsyncTask(NoteDAO noteDao) {
-        mNoteDao = noteDao;
+    public UpdateAsyncTask(NoteDAO noteDAO, Note note) {
+        mNoteDao = noteDAO;
+        mNote = note;
     }
 
     @Override
-    protected Void doInBackground(Note... notes) {
-        mNoteDao.update(notes);
-        return null;
-
+    public void run() {
+        mNoteDao.update(mNote);
     }
 }
+
+

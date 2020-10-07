@@ -22,14 +22,16 @@ public class NoteRepository {
 
     //region insert
     public void insertNoteTask(Note note) {
-        new InsertAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
+        InsertAsyncTask insertAsyncTask = new InsertAsyncTask(mNoteDatabase.getNoteDao(), note);
+        insertAsyncTask.start();
 
     }
     //endregion
 
     //region update
     public void updateNote(Note note) {
-         new UpdateAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
+        UpdateAsyncTask updateAsyncTask = new UpdateAsyncTask(mNoteDatabase.getNoteDao(), note);
+        updateAsyncTask.start();
     }
     //endregion
 
@@ -41,7 +43,9 @@ public class NoteRepository {
 
     //region delete
     public void deleteNote(Note note) {
-        new DeleteAsyncTask(mNoteDatabase.getNoteDao()).execute(note);
+        DeleteAsyncTask deleteAsyncTask = new DeleteAsyncTask(mNoteDatabase.getNoteDao(), note);
+        deleteAsyncTask.start();
+
     }
     //endregion
 

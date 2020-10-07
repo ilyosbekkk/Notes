@@ -6,18 +6,19 @@ import android.util.Log;
 import com.example.notes.models.Note;
 import com.example.notes.persistence.NoteDAO;
 
-public class InsertAsyncTask extends AsyncTask<Note, Void , Void> {
-    private NoteDAO mNoteDao;
-    public InsertAsyncTask(NoteDAO dao){
-        mNoteDao = dao;
+public class InsertAsyncTask extends Thread{
+
+    NoteDAO mNoteDao;
+    Note mNote;
+    public InsertAsyncTask(NoteDAO noteDAO, Note note){
+        mNoteDao = noteDAO;
+        mNote = note;
+
     }
     @Override
-    protected Void doInBackground(Note... notes) {
-        mNoteDao.insertNotes(notes);
-        return null;
+    public void run() {
+        mNoteDao.insertNotes(mNote);
     }
-
-
 }
 
 
