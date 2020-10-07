@@ -60,6 +60,7 @@
 
 
     <EditText
+        android:inputType="text"
         android:imeOptions="flagNoExtractUi"
         android:visibility="gone"
         android:background="@color/white"
