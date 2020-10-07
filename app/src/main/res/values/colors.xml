@@ -11,5 +11,6 @@
     <color name="darkGrey">#a2a2a2</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
+    <color name="green">#32CD32</color>
 
 </resources>

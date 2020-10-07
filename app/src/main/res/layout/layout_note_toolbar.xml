@@ -48,9 +48,10 @@
 
 
     <TextView
+
         android:id="@+id/note_text_title"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="20dp"
         android:layout_marginStart="15dp"
         android:layout_marginLeft="15dp"
         android:layout_weight="85"
